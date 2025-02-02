@@ -2,6 +2,7 @@ from fastapi import FastAPI, Query, HTTPException
 import requests
 from pydantic import BaseModel
 from fastapi.responses import JSONResponse
+from typing import List  # Import List from typing
 from .utils import is_prime, is_perfect, is_armstrong, digit_sum
 from .schemas import NumberResponse, ErrorResponse
 
@@ -22,7 +23,7 @@ async def classify_number(number: str = Query(..., description="The number to cl
     fun_fact = response.json().get("text", "No fun fact available.")
 
     # Determine properties
-    properties = []
+    properties: List[str] = []  # Use List[str] instead of list[str]
     if is_armstrong(number_int):
         properties.append("armstrong")
     if number_int % 2 == 0:
