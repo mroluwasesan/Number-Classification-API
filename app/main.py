@@ -28,12 +28,21 @@ async def classify_number(number: Union[int, float, str] = Query(..., descriptio
 
     # Determine properties
     properties: List[str] = []
-    if isinstance(number_int, int) and is_armstrong(number_int):
-        properties.append("armstrong")
-    if isinstance(number_int, int) and number_int % 2 == 0:
-        properties.append("even")
-    elif isinstance(number_int, int):
-        properties.append("odd")
+    if isinstance(number_int, int):
+        if number_int >= 0:  # Only check for prime, perfect, and Armstrong for non-negative integers
+            if is_prime(number_int):
+                properties.append("prime")
+            if is_perfect(number_int):
+                properties.append("perfect")
+            if is_armstrong(number_int):
+                properties.append("armstrong")
+        if number_int % 2 == 0:
+            properties.append("even")
+        else:
+            properties.append("odd")
+    else:
+        # Floating-point numbers have no properties
+        pass
 
     return {
         "number": number_int if isinstance(number_int, int) else number_float,
