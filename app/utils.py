@@ -1,4 +1,4 @@
-from typing import List  # Import List from typing
+from typing import List
 
 def is_prime(n: int) -> bool:
     if n < 2:
@@ -20,7 +20,7 @@ def is_perfect(n: int) -> bool:
     return sum_divisors == n
 
 def is_armstrong(n: int) -> bool:
-    digits: List[int] = [int(d) for d in str(n)]  # Use List[int] instead of list[int]
+    digits: List[int] = [int(d) for d in str(n)]
     num_digits = len(digits)
     return sum(d ** num_digits for d in digits) == n
 

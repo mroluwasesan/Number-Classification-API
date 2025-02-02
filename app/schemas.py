@@ -1,12 +1,12 @@
-from typing import List
+from typing import List, Union
 from pydantic import BaseModel
 
 class NumberResponse(BaseModel):
-    number: int
+    number: Union[int, float]
     is_prime: bool
     is_perfect: bool
-    properties: List[str]  # Use List[str] instead of list[str]
-    digit_sum: int
+    properties: List[str]
+    digit_sum: Union[int, None]
     fun_fact: str
 
 class ErrorResponse(BaseModel):

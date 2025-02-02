@@ -2,7 +2,7 @@ from fastapi import FastAPI, Query, HTTPException
 import requests
 from pydantic import BaseModel
 from fastapi.responses import JSONResponse
-from typing import List  # Import List from typing
+from typing import List, Union
 from .utils import is_prime, is_perfect, is_armstrong, digit_sum
 from .schemas import NumberResponse, ErrorResponse
 
@@ -12,31 +12,35 @@ app = FastAPI()
 FUN_FACT_API_URL = "http://numbersapi.com/{}/math?json"
 
 @app.get("/api/classify-number", response_model=NumberResponse)
-async def classify_number(number: str = Query(..., description="The number to classify")):
+async def classify_number(number: Union[int, float, str] = Query(..., description="The number to classify")):
     try:
-        number_int = int(number)
-    except ValueError:
-        raise HTTPException(status_code=400, detail={"number": number, "error": True})
+        # Convert the input to a float first (to handle both integers and floating-point numbers)
+        number_float = float(number)
+        # If the input is a whole number, convert it to an integer
+        number_int = int(number_float) if number_float.is_integer() else number_float
+    except (ValueError, TypeError):
+        # If the input cannot be converted to a number, return a 400 Bad Request
+        raise HTTPException(status_code=400, detail={"number": str(number), "error": True})
 
     # Get fun fact
-    response = requests.get(FUN_FACT_API_URL.format(number_int))
+    response = requests.get(FUN_FACT_API_URL.format(number_int if isinstance(number_int, int) else number_float))
     fun_fact = response.json().get("text", "No fun fact available.")
 
     # Determine properties
-    properties: List[str] = []  # Use List[str] instead of list[str]
-    if is_armstrong(number_int):
+    properties: List[str] = []
+    if isinstance(number_int, int) and is_armstrong(number_int):
         properties.append("armstrong")
-    if number_int % 2 == 0:
+    if isinstance(number_int, int) and number_int % 2 == 0:
         properties.append("even")
-    else:
+    elif isinstance(number_int, int):
         properties.append("odd")
 
     return {
-        "number": number_int,
-        "is_prime": is_prime(number_int),
-        "is_perfect": is_perfect(number_int),
+        "number": number_int if isinstance(number_int, int) else number_float,
+        "is_prime": is_prime(number_int) if isinstance(number_int, int) else False,
+        "is_perfect": is_perfect(number_int) if isinstance(number_int, int) else False,
         "properties": properties,
-        "digit_sum": digit_sum(number_int),
+        "digit_sum": digit_sum(number_int) if isinstance(number_int, int) else None,
         "fun_fact": fun_fact
     }
 
