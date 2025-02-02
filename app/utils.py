@@ -20,9 +20,13 @@ def is_perfect(n: int) -> bool:
     return sum_divisors == n
 
 def is_armstrong(n: int) -> bool:
-    digits: List[int] = [int(d) for d in str(n)]
+    # Handle negative numbers by taking their absolute value
+    n_abs = abs(n)
+    digits: List[int] = [int(d) for d in str(n_abs)]
     num_digits = len(digits)
-    return sum(d ** num_digits for d in digits) == n
+    return sum(d ** num_digits for d in digits) == n_abs
 
 def digit_sum(n: int) -> int:
-    return sum(int(d) for d in str(n))
+    # Handle negative numbers by taking their absolute value
+    n_abs = abs(n)
+    return sum(int(d) for d in str(n_abs))
